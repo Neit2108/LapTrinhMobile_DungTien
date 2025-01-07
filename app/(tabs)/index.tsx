@@ -1,86 +1,145 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import React from 'react';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
-export default function PhoneNumberInputScreen() {
-  const [phoneNumber, setPhoneNumber] = useState('');
+const notifications = [
+  {
+    id: '1',
+    title: 'Bước 1 Xác định nhu cầu khách hàng',
+    description: 'Vũ Văn Hoàng sắp đến hạn lúc 01/08/2020 9:00',
+    date: '20/08/2020, 06:00',
+    isRead: false, // Chưa xem
+  },
+  {
+    id: '2',
+    title: 'Bạn có khách hàng mới!',
+    description: 'Chúc mừng bạn, bạn có khách hàng mới. Hãy mau chóng liên lạc ngay.',
+    date: '20/08/2020, 06:00',
+    isRead: true, // Đã xem
+  },
+  {
+    id: '3',
+    title: 'Khách hàng được chia sẻ bị trùng',
+    description: 'Rất tiếc, khách hàng được chia sẻ đã tồn tại trên hệ thống. Vui lòng kiểm tra lại.',
+    date: '20/08/2020, 06:00',
+    isRead: false,
+  },
+  {
+    id: '4',
+    title: 'Khách hàng được thêm bị trùng',
+    description: 'Rất tiếc, khách hàng được thêm đã tồn tại trên hệ thống. Vui lòng thêm khách hàng khác.',
+    date: '20/08/2020, 06:00',
+    isRead: true,
+  },
+];
+
+const NotificationScreen = () => {
+  const renderItem = ({ item }) => (
+    <View style={[styles.notificationItem, item.isRead ? styles.read : styles.unread]}>
+      <Ionicons
+        name={item.isRead ? 'checkmark-circle' : 'person-circle'}
+        size={24}
+        color={item.isRead ? '#4A90E2' : '#007AFF'}
+        style={styles.icon}
+      />
+      <View style={styles.textContainer}>
+        <Text style={[styles.title, item.isRead ? styles.readText : styles.unreadText]}>{item.title}</Text>
+        <Text style={styles.description}>{item.description}</Text>
+        <Text style={styles.date}>{item.date}</Text>
+      </View>
+    </View>
+  );
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Đăng nhập</Text>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Nhập số điện thoại</Text>
-        <Text style={styles.description}>
-          Dùng số điện thoại để đăng nhập hoặc đăng ký tài khoản tại OneHousing Pro
-        </Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Nhập số điện thoại của bạn"
-          placeholderTextColor="#BDBDBD"
-          keyboardType="phone-pad"
-          value={phoneNumber}
-          onChangeText={setPhoneNumber}
-        />
-      </View>
-      <TouchableOpacity
-        style={[styles.button, phoneNumber ? styles.buttonActive : styles.buttonInactive]}
-        disabled={!phoneNumber}
-      >
-        <Text style={styles.buttonText}>Tiếp tục</Text>
+      <Text style={styles.header}>Thông báo</Text>
+      <FlatList
+        data={notifications}
+        keyExtractor={(item) => item.id}
+        renderItem={renderItem}
+        contentContainerStyle={styles.list}
+      />
+      <TouchableOpacity style={styles.addButton}>
+        <Ionicons name="add" size={24} color="white" />
       </TouchableOpacity>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    padding: 16,
+    backgroundColor: '#F8F8F8',
+  },
+  header: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginVertical: 10,
+  },
+  list: {
+    paddingHorizontal: 10,
+  },
+  notificationItem: {
+    flexDirection: 'row',
+    backgroundColor: 'white',
+    padding: 10,
+    marginVertical: 5,
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 2,
+  },
+  unread: {
+    borderLeftWidth: 5,
+    borderLeftColor: '#007AFF', // Màu xanh cho thông báo chưa xem
+  },
+  read: {
+    borderLeftWidth: 5,
+    borderLeftColor: '#E0E0E0', // Màu xám cho thông báo đã xem
+  },
+  icon: {
+    marginRight: 10,
+    marginTop: 5,
+  },
+  textContainer: {
+    flex: 1,
   },
   title: {
-    fontSize: 24,
     fontWeight: 'bold',
-    color: '#000',
-    marginBottom: 16,
-    borderBottomWidth: 0, // Xóa viền dưới
+    fontSize: 16,
   },
-  inputContainer: {
-    marginTop: 16,
+  unreadText: {
+    color: '#007AFF', // Màu xanh cho thông báo chưa xem
   },
-  label: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#000',
-    marginBottom: 8,
+  readText: {
+    color: '#333', // Màu xám cho thông báo đã xem
   },
   description: {
     fontSize: 14,
-    color: '#6F6F6F',
-    marginBottom: 16,
+    color: '#666',
+    marginVertical: 5,
   },
-  input: {
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    color: '#000',
-    marginBottom: 32,
+  date: {
+    fontSize: 12,
+    color: '#999',
   },
-  button: {
-    padding: 16,
-    borderRadius: 8,
+  addButton: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    backgroundColor: '#4A90E2',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
     alignItems: 'center',
-  },
-  buttonActive: {
-    backgroundColor: '#007AFF',
-  },
-  buttonInactive: {
-    backgroundColor: '#E0E0E0',
-  },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#fff',
+    shadowColor: '#000',
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 5,
   },
 });
+
+export default NotificationScreen;
